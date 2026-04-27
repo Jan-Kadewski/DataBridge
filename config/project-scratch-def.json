@@ -1,7 +1,7 @@
 {
-  "orgName": "jank company",
+  "orgName": "DataBridge Hub",
   "edition": "Developer",
-  "features": ["EnableSetPasswordInApi"],
+  "features": ["EnableSetPasswordInApi",  "ChangeDataCapture"],
   "settings": {
     "lightningExperienceSettings": {
       "enableS1DesktopEnabled": true

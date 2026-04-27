@@ -5,5 +5,13 @@
     "**/.sf": true,
     "**/.sfdx": true
   },
-  "xml.preferences.showSchemaDocumentationType": "none"
+  "xml.preferences.showSchemaDocumentationType": "none",
+  "workbench.tree.indent": 40,
+  "workbench.tree.renderIndentGuides": "always",
+  "workbench.colorCustomizations": {
+    "sideBar.foreground": "#e8e8e8",
+    "list.inactiveSelectionForeground": "#ffffff",
+    "list.activeSelectionForeground": "#ffffff",
+    "list.hoverForeground": "#ffffff",
+  }
 }

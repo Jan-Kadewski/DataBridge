@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>External_ID__c</fullName>
+    <label>External ID</label>
+    <length>36</length>
+    <type>Text</type>
+    <externalId>true</externalId>
+    <unique>true</unique>
+    <caseSensitive>true</caseSensitive>
+    <description>UUID from the legacy/external system (legacy_contacts.id)</description>
+</CustomField>

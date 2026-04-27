@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Enable Webhook Outbound</label>
+    <protected>false</protected>
+    <values>
+        <field>Enabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Controls whether Salesforce sends outbound callouts to MuleSoft webhook after record changes.</value>
+    </values>
+    <values>
+        <field>Number_Value__c</field>
+        <value xsi:type="xsd:decimal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">0</value>
+    </values>
+    <values>
+        <field>Text_Value__c</field>
+        <value xsi:type="xsd:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></value>
+    </values>
+</CustomMetadata>
