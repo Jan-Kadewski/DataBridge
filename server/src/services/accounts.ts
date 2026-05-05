@@ -1,4 +1,5 @@
 import { pool } from '../db/pool.js';
+import { notifyAccountChange } from './mulesoft.js';
 import {
   insertAccount,
   listAccounts as dbListAccounts,
@@ -62,6 +63,25 @@ export async function createAccount(
 
     await client.query('COMMIT');
 
+    // Fire-and-forget webhook to MuleSoft. If this fails, PG row is already
+    // committed and the scheduled ETL flow will pick it up later.
+    void notifyAccountChange(
+      {
+        accounts: [
+          {
+            externalId: created.id,
+            name: created.name,
+            industry: created.industry,
+            annualRevenue: created.annual_revenue === null
+              ? null
+              : Number(created.annual_revenue),
+            billingCity: created.billing_city,
+          },
+        ],
+      },
+      ctx,
+    );
+
     ctx.logger.info(
       { accountId: created.id, durationMs: Date.now() - started },
       'Account created',
@@ -116,6 +136,25 @@ export async function updateAccountById(
     );
 
     await client.query('COMMIT');
+
+void notifyAccountChange(
+      {
+        accounts: [
+          {
+            externalId: updated.id,
+            name: updated.name,
+            industry: updated.industry,
+            annualRevenue: updated.annual_revenue === null
+              ? null
+              : Number(updated.annual_revenue),
+            billingCity: updated.billing_city,
+          },
+        ],
+      },
+      ctx,
+    );
+
+
     ctx.logger.info({ accountId: updated.id }, 'Account updated');
 
 

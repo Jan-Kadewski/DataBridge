@@ -1,0 +1,39 @@
+<template>
+    <div class="slds-p-around_medium">
+        <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+            <h1 class="slds-text-heading_medium">DataBridge Sync Dashboard</h1>
+            <div class="slds-text-body_small slds-text-color_weak">
+                <template lwc:if={subscribed}>
+                    <lightning-icon
+                        icon-name="utility:record"
+                        size="xx-small"
+                        variant="success"
+                        alternative-text="Live"
+                        class="slds-m-right_xx-small">
+                    </lightning-icon>
+                    Live (subscribed to Log__e)
+                </template>
+                <template lwc:else>
+                    <lightning-icon
+                        icon-name="utility:record"
+                        size="xx-small"
+                        variant="error"
+                        alternative-text="Not live">
+                    </lightning-icon>
+                    Not subscribed
+                </template>
+            </div>
+        </div>
+
+        <c-sync-metrics-cards lwc:ref="metrics"></c-sync-metrics-cards>
+
+        <div class="slds-grid slds-gutters slds-m-top_medium">
+            <div class="slds-col slds-size_2-of-3">
+                <c-sync-operations-table lwc:ref="table"></c-sync-operations-table>
+            </div>
+            <div class="slds-col slds-size_1-of-3">
+                <c-sync-error-chart lwc:ref="chart"></c-sync-error-chart>
+            </div>
+        </div>
+    </div>
+</template>

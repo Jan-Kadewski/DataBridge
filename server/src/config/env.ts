@@ -20,8 +20,8 @@ const EnvSchema = z.object({
   SF_USERNAME: z.string().optional(),
   SF_PRIVATE_KEY_PATH: z.string().optional(),
 
-  MULESOFT_WEBHOOK_URL: z.string().url().optional().or(z.literal('')),
-  MULESOFT_API_KEY: z.string().optional(),
+  // MULESOFT_WEBHOOK_URL: z.string().url().optional().or(z.literal('')),
+  // MULESOFT_API_KEY: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

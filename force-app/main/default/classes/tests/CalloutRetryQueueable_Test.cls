@@ -75,4 +75,4 @@ private class CalloutRetryQueueable_Test {
         System.assert(errors[0].Message__c.contains('Non-retriable'));
     }
 
-    
+}

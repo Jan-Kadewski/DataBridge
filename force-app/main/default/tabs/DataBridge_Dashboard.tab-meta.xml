@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>DataBridge Dashboard</label>
+    <lwcComponent>syncDashboard</lwcComponent>
+    <motif>Custom53: Monitor</motif>
+</CustomTab>

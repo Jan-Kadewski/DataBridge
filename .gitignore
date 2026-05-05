@@ -3,3 +3,13 @@ node_modules/
 .sfdx/
 .DS_Store
 *.log
+secrets/
+
+
+Consumer Key	
+3MVG9696SH3dTknJ4L2SDgrf6_8DjBtPUk8.C3bhAik0zGmo2dttgXLtoyiIUZZniqb4A7i.iqQ==
+Consumer Secret	
+926746F5EF39C7047482B8B7E91C315D4CB1F5384A4F7E2CEF7A84F6CA67037B
+
+
+test-nvzbm9exxafh@example.com

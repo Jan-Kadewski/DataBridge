@@ -1,0 +1,37 @@
+<template>
+    <lightning-layout multiple-rows="false" class="slds-grid slds-gutters">
+        <lightning-layout-item size="3" padding="around-small">
+            <div class="slds-box slds-box_small slds-theme_shade slds-text-align_center">
+                <div class="slds-text-title_caps">Total Today</div>
+                <div class="slds-text-heading_large">{metrics.totalToday}</div>
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="3" padding="around-small">
+            <div class="slds-box slds-box_small slds-theme_success slds-text-align_center">
+                <div class="slds-text-title_caps">Success Rate</div>
+                <div class="slds-text-heading_large">{metrics.successRatePct}%</div>
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="3" padding="around-small">
+            <div class="slds-box slds-box_small slds-theme_warning slds-text-align_center">
+                <div class="slds-text-title_caps">Warnings</div>
+                <div class="slds-text-heading_large">{metrics.warningsToday}</div>
+            </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="3" padding="around-small">
+            <div class="slds-box slds-box_small slds-theme_error slds-text-align_center">
+                <div class="slds-text-title_caps">Errors</div>
+                <div class="slds-text-heading_large">{metrics.errorsToday}</div>
+            </div>
+        </lightning-layout-item>
+    </lightning-layout>
+
+    <template lwc:if={error}>
+        <div class="slds-text-color_error slds-m-top_small">
+            Failed to load metrics: {error}
+        </div>
+    </template>
+</template>

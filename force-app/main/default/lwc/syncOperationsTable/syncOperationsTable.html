@@ -1,0 +1,119 @@
+<template>
+    <lightning-card title="Recent Operations" icon-name="standard:log_a_call">
+
+        <!-- Header actions -->
+        <div slot="actions">
+            <!-- Filter toggle button z badge aktywnych filtrów -->
+            <div class="slds-is-relative slds-m-right_x-small" style="display:inline-block">
+<lightning-button-icon
+    icon-name={filterPanelIcon}
+    alternative-text="Filters"
+    title="Filters"
+    variant={filterButtonVariant}
+    onclick={handleTogglePanel}>
+</lightning-button-icon>
+                <template lwc:if={filterBadgeLabel}>
+                    <span class="slds-badge slds-badge_lightest"
+                          style="position:absolute;top:-8px;right:-8px;font-size:9px;
+                                 min-width:16px;height:16px;line-height:16px;padding:0 4px;">
+                        {activeFilterCount}
+                    </span>
+                </template>
+            </div>
+
+            <lightning-button-icon
+                icon-name="utility:refresh"
+                alternative-text="Refresh"
+                onclick={handleRefresh}>
+            </lightning-button-icon>
+        </div>
+
+        <!-- Filter panel — collapsible -->
+        <template lwc:if={showFilterPanel}>
+            <div class="slds-box slds-box_x-small slds-m-around_small
+                        slds-theme_shade" style="border-radius:4px">
+                <div class="slds-grid slds-gutters slds-wrap">
+
+                    <!-- Renderuje filtry z FILTER_CONFIG dynamicznie -->
+                    <template for:each={filterRows} for:item="row">
+                        <div key={row.key} class="slds-col slds-size_1-of-2
+                                                   slds-large-size_1-of-4
+                                                   slds-p-bottom_x-small">
+                            <template lwc:if={row.options}>
+                                <!-- Select filter -->
+                                <lightning-combobox
+                                    label={row.label}
+                                    value={row.value}
+                                    options={row.options}
+                                    data-key={row.key}
+                                    onchange={handleFilterChange}
+                                    variant="label-stacked">
+                                </lightning-combobox>
+                            </template>
+                            <template lwc:else>
+                                <!-- Text filter -->
+                                <lightning-input
+                                    type="text"
+                                    label={row.label}
+                                    value={row.value}
+                                    data-key={row.key}
+                                    onchange={handleFilterChange}
+                                    variant="label-stacked">
+                                </lightning-input>
+                            </template>
+                        </div>
+                    </template>
+
+                </div>
+
+                <!-- Clear all + podsumowanie -->
+                <div class="slds-grid slds-grid_align-spread slds-m-top_x-small">
+                    <span class="slds-text-body_small slds-text-color_weak">
+                        {activeSummary}
+                    </span>
+                    <lightning-button
+                        label="Clear all"
+                        variant="neutral"
+                        size="small"
+                        onclick={handleClearAllFilters}>
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Correlation ID active indicator (poza panelem) -->
+        <template lwc:if={isCorrelationFiltered}>
+            <div class="slds-p-horizontal_medium slds-p-bottom_x-small
+                        slds-text-body_small slds-text-color_weak">
+                <lightning-icon icon-name="utility:filterList" size="xx-small"
+                    class="slds-m-right_xx-small"></lightning-icon>
+                Correlation ID: <code>{_filters.correlationId}</code>
+            </div>
+        </template>
+
+        <!-- Tabela -->
+        <template lwc:if={hasRows}>
+            <lightning-datatable
+                key-field="recordId"
+                data={operations}
+                columns={columns}
+                hide-checkbox-column
+                onrowaction={handleRowAction}
+                default-sort-direction="desc"
+                sorted-direction="desc"
+                sorted-by="createdDate"
+                max-row-selection="0">
+            </lightning-datatable>
+        </template>
+        <template lwc:else>
+            <div class="slds-p-around_medium slds-text-color_weak slds-text-align_center">
+                No operations match the current filters.
+            </div>
+        </template>
+
+        <template lwc:if={error}>
+            <div class="slds-text-color_error slds-p-horizontal_medium">{error}</div>
+        </template>
+
+    </lightning-card>
+</template>

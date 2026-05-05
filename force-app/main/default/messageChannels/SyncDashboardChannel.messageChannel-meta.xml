@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Sync Dashboard Channel</masterLabel>
+    <isExposed>false</isExposed>
+    <description>Cross-component messaging for Sync Dashboard LWC suite</description>
+    <lightningMessageFields>
+        <description>Correlation ID to filter table and chart by; empty = clear filter</description>
+        <fieldName>correlationId</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <description>Message type: FILTER_BY_CORRELATION | REFRESH_ALL</description>
+        <fieldName>messageType</fieldName>
+    </lightningMessageFields>
+</LightningMessageChannel>

@@ -1,4 +1,5 @@
 import { pool } from '../db/pool.js';
+import { notifyContactChange } from './mulesoft.js';
 import {
   insertContact,
   insertSyncLog,
@@ -46,6 +47,22 @@ export async function createContact(
     );
 
     await client.query('COMMIT');
+    void notifyContactChange(
+      {
+        contacts: [
+          {
+            externalId: created.id,
+            accountExternalId: created.account_external_id,
+            firstName: created.first_name,
+            lastName: created.last_name,
+            email: created.email,
+          },
+        ],
+      },
+      ctx,
+    );
+
+
     ctx.logger.info({ contactId: created.id }, 'Contact created');
     return contactFromRow(created);
   } catch (err) {

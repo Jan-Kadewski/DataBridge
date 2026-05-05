@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title="Errors by Category (today)" icon-name="utility:chart">
+        <div slot="actions">
+            <lightning-button-icon
+                icon-name="utility:refresh"
+                alternative-text="Refresh"
+                onclick={handleRefresh}>
+            </lightning-button-icon>
+        </div>
+
+        <div class="slds-p-around_medium" lwc:ref="chartContainer">
+            <template lwc:if={hasData}>
+                <canvas lwc:ref="canvas" class="donut-canvas"></canvas>
+            </template>
+            <template lwc:else>
+                <p class="slds-text-color_weak slds-text-align_center">
+                    No warnings or errors today — nothing to chart.
+                </p>
+            </template>
+        </div>
+
+        <template lwc:if={error}>
+            <div class="slds-text-color_error slds-p-horizontal_medium">{error}</div>
+        </template>
+    </lightning-card>
+</template>
