@@ -1,18 +1,42 @@
-# Salesforce DX Project: Next Steps
+# DataBridge Hub
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+[![CI](https://github.com/<USERNAME>/databridge-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/<USERNAME>/databridge-hub/actions/workflows/ci.yml)
 
-## How Do You Plan to Deploy Your Changes?
+Bidirectional data synchronization between Salesforce and a PostgreSQL-backed
+external application, orchestrated through MuleSoft.
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+## Architecture
 
-## Configure Your Salesforce DX Project
+Three integration patterns in one project:
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+- **Batch ETL** (MuleSoft scheduled, PG → Bulk API 2.0 → Salesforce)
+- **Real-time CDC** (Salesforce → Pub/Sub API → MuleSoft → PG, sub-second latency)
+- **Webhook** (React UI → Node/Fastify → MuleSoft HTTP → Salesforce REST)
 
-## Read All About It
+Correlation ID propagates through all three systems and both dashboards.
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+## Stack
+
+- **Salesforce** — Apex, LWC, Platform Events, Change Data Capture, Pub/Sub API, Named Credentials (new model), JWT Bearer auth
+- **MuleSoft** — Mule 4.x runtime, DataWeave 2.0, Salesforce Connector, Pub/Sub Connector, Database Connector (JDBC), Object Store v2, HTTP Listener
+- **Node.js** — Fastify, TypeScript (strict, ESM), plain `pg` driver, zod, pino, JWT Bearer flow to Salesforce
+- **React** — Vite, React 18, TypeScript, Tailwind v4, shadcn/ui, TanStack Query, Recharts
+- **Tests** — Apex tests (>85% coverage), Vitest + testcontainers-pg + nock
+- **CI** — GitHub Actions: scratch org + Apex tests, Node tests, typecheck, lint
+
+## Local development
+
+See `docs/` for setup per component:
+- `server/` — Node backend
+- `client/` — React dashboard
+- `salesforce/databridge-sf/` — SFDX project
+- `mulesoft/` — Mule application
+- `secrets/` — RSA keys (gitignored)
+
+## CI
+
+Every PR runs:
+- Salesforce: scratch org creation, metadata deploy, Apex tests with ≥85% coverage enforcement
+- Node: TypeScript typecheck, Vitest with coverage, integration tests via testcontainers
+- Client: TypeScript typecheck + Vite build
+- Lint: ESLint on Node codebase
