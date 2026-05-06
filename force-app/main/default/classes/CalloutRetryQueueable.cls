@@ -45,10 +45,6 @@ public with sharing class CalloutRetryQueueable
         this.attempt = attempt;
     }
 
-    /**
-     * Enqueue the first attempt. Safe to call from synchronous contexts
-     * (triggers, REST endpoints, controllers) — actual callout happens async.
-     */
     public static Id enqueue(
         String namedCredential,
         String path,
