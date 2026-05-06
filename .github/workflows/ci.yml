@@ -1,0 +1,146 @@
+name: Salesforce CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'salesforce/**'
+  push:
+    branches: [main]
+    paths:
+      - 'salesforce/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  salesforce:
+    name: Salesforce — tests, coverage, static analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java (required by PMD)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli
+          sf --version
+
+      - name: Install Salesforce Code Analyzer v5
+        run: |
+          sf plugins install @salesforce/plugin-code-analyzer
+          sf code-analyzer --version
+
+      - name: Authenticate to DevHub
+        run: |
+          echo "${{ secrets.SF_DEVHUB_AUTH_URL }}" > devhub-auth.txt
+          sf org login sfdx-url \
+            --sfdx-url-file devhub-auth.txt \
+            --alias DevHub \
+            --set-default-dev-hub
+          rm devhub-auth.txt
+
+      - name: Create scratch org
+        working-directory: salesforce/databridge-sf
+        run: |
+          sf org create scratch \
+            --definition-file config/project-scratch-def.json \
+            --alias ci-org \
+            --duration-days 1 \
+            --set-default \
+            --wait 10
+
+      - name: Deploy metadata
+        working-directory: salesforce/databridge-sf
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org ci-org \
+            --wait 20
+
+      - name: Assign permission set
+        working-directory: salesforce/databridge-sf
+        run: |
+          sf org assign permset \
+            --name DataBridge_Admin \
+            --target-org ci-org
+
+      - name: Run Apex tests
+        working-directory: salesforce/databridge-sf
+        run: |
+          sf apex run test \
+            --target-org ci-org \
+            --test-level RunLocalTests \
+            --code-coverage \
+            --result-format json \
+            --output-dir apex-test-results \
+            --wait 20
+
+      - name: Enforce coverage ≥ 85%
+        working-directory: salesforce/databridge-sf
+        run: |
+          node -e "
+            const fs   = require('fs');
+            const dir  = 'apex-test-results';
+            const file = fs.readdirSync(dir).find(f =>
+              f.endsWith('.json') && f.startsWith('test-result')
+            );
+            if (!file) { console.error('No test result JSON found'); process.exit(1); }
+            const data = JSON.parse(fs.readFileSync(dir + '/' + file, 'utf8'));
+            const pct  = parseInt(data.summary?.orgWideCoverage ?? '0');
+            console.log('Org-wide coverage: ' + pct + '%');
+            if (pct < 85) {
+              console.error('FAIL: ' + pct + '% is below the 85% threshold');
+              process.exit(1);
+            }
+            console.log('PASS');
+          "
+
+      - name: Static analysis — Apex (PMD)
+        run: |
+          sf code-analyzer run \
+            --target "salesforce/databridge-sf/force-app/**/*.cls" \
+            --target "salesforce/databridge-sf/force-app/**/*.trigger" \
+            --rule-selector "pmd" \
+            --config-file ./code-analyzer.yml \
+            --view table \
+            --severity-threshold 2
+
+      - name: Static analysis — LWC (ESLint)
+        run: |
+          sf code-analyzer run \
+            --target "salesforce/databridge-sf/force-app/**/*.js" \
+            --rule-selector "eslint" \
+            --config-file ./code-analyzer.yml \
+            --view table \
+            --severity-threshold 2
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apex-test-results
+          path: salesforce/databridge-sf/apex-test-results/
+          retention-days: 7
+
+      - name: Cleanup scratch org
+        if: always()
+        working-directory: salesforce/databridge-sf
+        run: |
+          sf org delete scratch \
+            --target-org ci-org \
+            --no-prompt || true

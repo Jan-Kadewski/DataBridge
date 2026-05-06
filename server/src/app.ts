@@ -7,6 +7,8 @@ import { healthRoutes } from './routes/health.js';
 import { accountRoutes } from './routes/accounts.js';
 import { contactRoutes } from './routes/contacts.js';
 import { syncRoutes } from './routes/sync.js';
+import cors from '@fastify/cors';
+
 
 async function buildApp() {
   const app = Fastify({
@@ -23,6 +25,15 @@ async function buildApp() {
     disableRequestLogging: false,
   });
 
+await app.register(cors, {
+    origin:
+      env.NODE_ENV === 'development'
+        ? ['http://localhost:5173']
+        : false,
+    credentials: true,
+    exposedHeaders: ['x-correlation-id'],
+  });
+
   await app.register(correlationIdPlugin);
   await app.register(errorHandlerPlugin);
   await app.register(accountRoutes);
@@ -36,6 +47,7 @@ async function buildApp() {
 
 async function start() {
   const app = await buildApp();
+
 
   const shutdown = async (signal: string) => {
     app.log.info({ signal }, 'Shutting down');
